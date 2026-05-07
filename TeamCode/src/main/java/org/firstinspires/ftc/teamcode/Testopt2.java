@@ -36,6 +36,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import javax.lang.model.element.VariableElement;
+
 /*
  * This file contains an example of an iterative (Non-Linear) "OpMode".
  * An OpMode is a 'program' that runs in either the autonomous or the teleop period of an FTC match.
@@ -60,6 +62,7 @@ public class Testopt2 extends OpMode
     private DcMotor frontrightDrive = null;
     private DcMotor backleftDrive = null;
     private DcMotor backrightDrive = null;
+
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -117,24 +120,24 @@ public class Testopt2 extends OpMode
 
         // POV Mode uses left stick to go forward, and right stick to turn.
         // - This uses basic math to combine motions and is easier to drive straight.
-        double drive = -gamepad1.left_stick_y;
-        double turn  =  gamepad1.right_stick_x;
-        leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;
-        rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
 
+        double y = -gamepad1.left_stick_y; // Remember, Y stick is reversed!
+        double x = gamepad1.left_stick_x;
+        double rx = gamepad1.right_stick_x;
+        frontleftDrive.setPower(rx+y+x);
+        backleftDrive.setPower(y-x+rx);
+        backrightDrive.setPower(y+x-rx);
+        frontrightDrive.setPower(y-x-rx);
         // Tank Mode uses one stick to control each wheel.
         // - This requires no math, but it is hard to drive forward slowly and keep straight.
         // leftPower  = -gamepad1.left_stick_y ;
         // rightPower = -gamepad1.right_stick_y ;
 
         // Send calculated power to wheels
-        frontleftDrive.setPower(leftPower);
-        frontrightDrive.setPower(rightPower);
-        backleftDrive.setPower(leftPower);
-        backrightDrive.setPower(rightPower);
+
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
+        //telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
     }
 
     /*
